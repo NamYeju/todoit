@@ -1,10 +1,14 @@
 package app.todoit.auth.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import app.todoit.auth.dto.KakaoUserInfo;
-import app.todoit.auth.entity.KakaoUser;
+import app.todoit.auth.entity.User;
+import app.todoit.auth.exception.MemberException;
 import app.todoit.auth.repository.UserRepository;
+import app.todoit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -14,11 +18,16 @@ public class AuthService {
 	private final UserRepository userRepository;
 
 	public void joinUp(KakaoUserInfo kakaoUserInfo){
-		userRepository.save(KakaoUser.builder()
-				.nickname(kakaoUserInfo.getNickname())
-				.email(kakaoUserInfo.getEmail())
-				.phone(kakaoUserInfo.getPhone())
-				.social("Kakao")
-				.build());
+
+		Optional<User> user = userRepository.findByEmail(kakaoUserInfo.getEmail());
+
+		if(user.isPresent())
+			throw new MemberException(ErrorCode.ALREADY_EXIST_USER);
+
+		if(user.isEmpty()){
+			userRepository.save(kakaoUserInfo.toEntity());
+		}
+
+
 	}
 }

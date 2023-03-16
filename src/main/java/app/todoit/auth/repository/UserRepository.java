@@ -1,10 +1,13 @@
 package app.todoit.auth.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import app.todoit.auth.entity.KakaoUser;
+import app.todoit.auth.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<KakaoUser, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
+	Optional<User> findByEmail(String email);
 }
