@@ -9,13 +9,15 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ErrorResponse {
-	private final HttpStatus httpStatus;
-	private final String message;
+	private HttpStatus httpStatus;
+	private String message;
 
 	public static ResponseEntity<ErrorResponse> toResponse(ErrorCode errorCode){
 		return ResponseEntity
 				.status(errorCode.getHttpStatus())
-				.body(ErrorResponse
-						.builder().message(errorCode.getMessage()).build());
+				.body(ErrorResponse.builder()
+									.httpStatus(errorCode.getHttpStatus())
+									.message(errorCode.getMessage())
+									.build());
 	}
 }

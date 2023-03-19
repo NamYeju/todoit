@@ -13,6 +13,6 @@ public enum ErrorCode {
 	ALREADY_EXIST_USER(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.")
 	;
 
-	private final HttpStatus httpStatus;
-	private final String message;
+	private HttpStatus httpStatus;
+	private String message;
 }
