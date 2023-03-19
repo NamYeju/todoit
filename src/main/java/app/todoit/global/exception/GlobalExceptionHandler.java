@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler
 	public ResponseEntity<ErrorResponse> memberException(MemberException e){
-		log.info("member exception = {}", e.getErrorCode().getMessage());
+		log.error("member exception >>> {}", e.getErrorCode().getMessage());
 
 		return ErrorResponse.toResponse(e.getErrorCode());
 	}
