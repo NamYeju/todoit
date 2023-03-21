@@ -18,10 +18,12 @@ public class FriendEntity{
 
     @MapsId("userId") // friendId.userId에 매핑
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @MapsId("friendId") // friendId.friendId에 매핑
     @ManyToOne
+    @JoinColumn(name = "friend_id")
     private User friend;
 
     @EmbeddedId

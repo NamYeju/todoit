@@ -3,6 +3,7 @@ package app.todoit.domain.friend.service;
 import app.todoit.auth.entity.User;
 import app.todoit.auth.repository.UserRepository;
 import app.todoit.domain.friend.dto.FriendResponseDto;
+import app.todoit.domain.friend.dto.PendingFriendResponseDto;
 import app.todoit.domain.friend.entity.FriendEntity;
 import app.todoit.domain.friend.entity.FriendId;
 import app.todoit.domain.friend.entity.PendingFriendEntity;
@@ -25,16 +26,16 @@ public class FriendService {
         User user = getUserEntity(userId);
         User friend= getUserEntity(friendId);
         PendingFriendEntity p = new PendingFriendEntity(user, friend);
-        if (friendRepository.existsById(new FriendId(userId,friendId)) || friendRepository.existsById(new FriendId(friendId,userId))) {
+        if (friendRepository.existsById(new FriendId(userId, friendId)) || friendRepository.existsById(new FriendId(friendId,userId))) {
             throw new FriendException(ErrorCode.ALREADY_FRIENDS);
         }
         else if (pendingFriendRepository.existsById(p.getPendingFriendId())) { //이미 신청한 상태면 신청 취소
             pendingFriendRepository.deleteById(p.getPendingFriendId());
-            return "CANCEL SUCCESS";
+            return "FRIEND CANCEL SUCCESS";
         }
         else {
             pendingFriendRepository.save(p);
-            return "ADD SUCCESS";
+            return "FRIEND ADD SUCCESS";
         }
     }
 
@@ -46,25 +47,20 @@ public class FriendService {
         pendingFriendRepository.deleteById(new PendingFriendId(friendId,userId));
         friendRepository.save(new FriendEntity(friend, user));
 
-        return "SUCCESS";
+        return "ACCEPT SUCCESS";
 
     }
 
     public String deleteFriend (Long userId, Long friendId) {
         //친구 삭제
 
-        Integer isDeleted = friendRepository.deleteFriend(userId, friendId);
-        if (isDeleted==0) {
-            throw new FriendException(ErrorCode.FRIENDS_NOT_FOUND);
-        }
-        else {
-            return "SUCCESS";
-        }
+        friendRepository.deleteFriend(userId, friendId); //예외처리 해야함
+        return "DELETE SUCCESS";
     }
 
-    public FriendResponseDto getPendingFriends (Long userId) {
+    public PendingFriendResponseDto getPendingFriends (Long userId) {
         //수락 대기 목록 조회
-        FriendResponseDto res = new FriendResponseDto();
+        PendingFriendResponseDto res = new PendingFriendResponseDto();
         res.entityToDto( pendingFriendRepository.findAllByPendingFriendIdFriendId(userId));
         return res;
 
@@ -73,7 +69,10 @@ public class FriendService {
     public FriendResponseDto getFriendsList (Long userId) {
         //친구 목록 조회 (양방향인 경우)
         FriendResponseDto res = new FriendResponseDto();
-        res.entityToDto(friendRepository.findMyFriends(userId));
+
+        res.entityToDtoByMe(friendRepository.findByUserId(userId)); //내가 건 친구
+        res.entityToDtoByFriend(friendRepository.findByFriendIdFriendId(userId)); //내가 수락한 친구
+
         return res;
 
 

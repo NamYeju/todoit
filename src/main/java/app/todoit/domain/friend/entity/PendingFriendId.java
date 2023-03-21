@@ -16,9 +16,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class PendingFriendId implements Serializable {
 
-    //@Column(name = "user_id")
+    @Column(name = "user_id")
     private Long userId;
 
-    //@Column(name = "friend_id")
+    @Column(name = "friend_id")
     private Long friendId;
 }
