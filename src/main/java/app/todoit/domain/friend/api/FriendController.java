@@ -1,5 +1,6 @@
 package app.todoit.domain.friend.api;
 
+import app.todoit.domain.friend.dto.FriendResponseDto;
 import app.todoit.domain.friend.entity.FriendEntity;
 import app.todoit.domain.friend.entity.PendingFriendEntity;
 import app.todoit.domain.friend.service.FriendService;
@@ -18,18 +19,19 @@ public class FriendController {
     }
 
     @GetMapping("/friend")
-    public List<FriendEntity> getFriendList() {
-        return friendService.getFriendsList();
+    public FriendResponseDto getFriendList() {
+        return friendService.getFriendsList(1L);
     }
 
     @DeleteMapping("/friend")
-    public void deleteFriend(@RequestParam Long friendId) { //친구 삭제
-        friendService.deleteFriend(friendId);
+    public String deleteFriend(@RequestParam Long friendId) { //친구 삭제
+
+        return friendService.deleteFriend(1L,friendId);
     }
 
     @GetMapping("/friend/pending")
-    public List<PendingFriendEntity> getPendingFriendList() { //신청 대기 목록 조회
-        return friendService.getPendingFriends();
+    public FriendResponseDto getPendingFriendList() { //신청 대기 목록 조회
+        return friendService.getPendingFriends(1L);
     }
 
     @PostMapping("/friend/accept")
