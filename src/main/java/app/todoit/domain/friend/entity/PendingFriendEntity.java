@@ -12,11 +12,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class PendingFriendEntity implements Serializable{
 
-    @MapsId("user_id")
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
     @ManyToOne
     private User user;
 
-    @MapsId("friend_id")
+    @MapsId("friendId")
+    @JoinColumn(name = "friend_id")
     @ManyToOne
     private User friend;
 

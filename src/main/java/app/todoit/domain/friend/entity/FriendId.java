@@ -17,7 +17,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class FriendId implements Serializable {
 
+    @Column(name = "user_id")
     private Long userId; //@MapsId("userId") 매핑
+    @Column(name = "friend_id")
     private Long friendId; //@MapsId("friendId") 매핑
 
 
