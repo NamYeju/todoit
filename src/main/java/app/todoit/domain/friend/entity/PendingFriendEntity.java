@@ -1,22 +1,31 @@
 package app.todoit.domain.friend.entity;
 
-import lombok.Builder;
-import lombok.Getter;
+import app.todoit.auth.entity.User;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "pending_friends")
 @Getter
-public class PendingFriendEntity {
+@NoArgsConstructor
+public class PendingFriendEntity implements Serializable{
+
+    @MapsId("user_id")
+    @ManyToOne
+    private User user;
+
+    @MapsId("friend_id")
+    @ManyToOne
+    private User friend;
+
     @EmbeddedId
-    private PendingFriendsId pendingFriendsId;
+    PendingFriendId pendingFriendId;
 
-
-    //생성자
-    public PendingFriendEntity (Long userId, Long friendId) {
-        this.pendingFriendsId.pendingFriendsIdBuilder(userId, friendId);
+    public PendingFriendEntity(User user, User friend) {
+        this.user=user;
+        this.friend= friend;
+        this.pendingFriendId =  new PendingFriendId(user.getId(), friend.getId());
     }
-
-
 }
