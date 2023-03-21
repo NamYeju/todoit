@@ -2,6 +2,7 @@ package app.todoit.domain.friend.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -12,11 +13,12 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class PendingFriendId implements Serializable {
 
-    @Column(name = "user_id")
+    //@Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "friend_id")
+    //@Column(name = "friend_id")
     private Long friendId;
 }

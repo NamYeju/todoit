@@ -10,13 +10,22 @@ import java.io.Serializable;
 @Table(name = "pending_friends")
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode
 public class PendingFriendEntity implements Serializable{
+
+    @MapsId("user_id")
+    @ManyToOne
+    private User user;
+
+    @MapsId("friend_id")
+    @ManyToOne
+    private User friend;
 
     @EmbeddedId
     PendingFriendId pendingFriendId;
 
-    public PendingFriendEntity(Long userId, Long friendId) {
-        this.pendingFriendId =  new PendingFriendId(userId, friendId);
+    public PendingFriendEntity(User user, User friend) {
+        this.user=user;
+        this.friend= friend;
+        this.pendingFriendId =  new PendingFriendId(user.getId(), friend.getId());
     }
 }

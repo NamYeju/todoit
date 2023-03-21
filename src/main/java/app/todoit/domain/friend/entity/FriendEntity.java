@@ -13,13 +13,23 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @Table(name = "friends")
-@EqualsAndHashCode
 @Getter
 public class FriendEntity{
-   @EmbeddedId
+
+    @MapsId("userId") // friendId.userId에 매핑
+    @ManyToOne
+    private User user;
+
+    @MapsId("friendId") // friendId.friendId에 매핑
+    @ManyToOne
+    private User friend;
+
+    @EmbeddedId
     private FriendId friendId;
 
-    public FriendEntity(Long userId, Long friendId) {
-        this.friendId = new FriendId(userId,friendId);
+    public FriendEntity(User user, User friend) {
+        this.user=user;
+        this.friend= friend;
+        this.friendId = new FriendId(user.getId(),friend.getId());
     }
 }

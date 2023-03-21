@@ -13,4 +13,8 @@ import java.util.List;
 public interface FriendRepository extends JpaRepository<FriendEntity, FriendId> {
     @Query(nativeQuery = true,value = "SELECT * FROM FRIENDS WHERE user_id = ?1 OR friend_id = ?1")
     List<FriendEntity> findMyFriends (@Param(value = "userId") Long userId);
+
+    @Query(nativeQuery = true, value = "DELETE FROM FRIENDS WHERE (user_id=?1 AND friend_id=?2) OR " +
+            "(user_id=?2 AND friend_id=?1) ")
+    Integer deleteFriend (@Param(value = "userId") Long userId, @Param(value = "friendId") Long friendId);
 }
