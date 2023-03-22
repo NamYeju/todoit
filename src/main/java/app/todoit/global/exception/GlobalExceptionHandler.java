@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import app.todoit.auth.exception.MemberException;
+import app.todoit.domain.auth.exception.MemberException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

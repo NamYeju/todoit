@@ -1,4 +1,4 @@
-package app.todoit.auth.entity;
+package app.todoit.domain.auth.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

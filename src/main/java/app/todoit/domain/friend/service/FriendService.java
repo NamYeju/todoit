@@ -1,7 +1,7 @@
 package app.todoit.domain.friend.service;
 
-import app.todoit.auth.entity.User;
-import app.todoit.auth.repository.UserRepository;
+import app.todoit.domain.auth.entity.User;
+import app.todoit.domain.auth.repository.UserRepository;
 import app.todoit.domain.friend.dto.FriendResponseDto;
 import app.todoit.domain.friend.dto.PendingFriendResponseDto;
 import app.todoit.domain.friend.entity.FriendEntity;
