@@ -59,6 +59,11 @@ public class JwtUtil {
 			.compact();
 	}
 
+	/** token에서 사용자정보 추출*/
+	public String getSubject(String AccessToken){
+		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(AccessToken).getBody().getSubject();
+	}
+
 	/** 토큰검증 */
 	public boolean validateToken(String token) {
 		try {
