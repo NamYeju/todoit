@@ -1,6 +1,6 @@
 package app.todoit.domain.friend.entity;
 
-import app.todoit.auth.entity.User;
+import app.todoit.domain.auth.entity.User;
 import lombok.*;
 
 import javax.persistence.*;

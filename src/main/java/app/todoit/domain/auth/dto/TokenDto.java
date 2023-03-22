@@ -1,4 +1,4 @@
-package app.todoit.auth.dto;
+package app.todoit.domain.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
