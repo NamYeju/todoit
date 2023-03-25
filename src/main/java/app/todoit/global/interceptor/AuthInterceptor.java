@@ -1,7 +1,5 @@
 package app.todoit.global.interceptor;
 
-import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -9,8 +7,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import app.todoit.domain.auth.entity.User;
+import app.todoit.domain.auth.exception.MemberException;
 import app.todoit.domain.auth.repository.UserRepository;
 import app.todoit.domain.auth.token.JwtUtil;
+import app.todoit.global.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,7 +26,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 		this.userRepository = userRepository;
 	}
 
-	/** controller로 요청 가기 전에 수행 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -34,21 +33,21 @@ public class AuthInterceptor implements HandlerInterceptor {
 
 		String accessToken = request.getHeader(AUTHORIZATION);
 
-		if(accessToken.length() > 0){
-			boolean b = jwtUtil.validateToken(accessToken);
-			log.info("result : {}", b);
-			String userId = jwtUtil.getSubject(accessToken);
-			Optional<User> user = userRepository.findById(Long.parseLong(userId));
-			log.info("user:{}", user.get().getEmail());
-			UserThreadLocal.set(user);
+		if (accessToken == null) {
+			log.error("{}", "요청헤더에 토큰이 존재하지 않습니다.");
+			throw new MemberException(ErrorCode.UNAUTHORIZED);
+		}
 
-		}
-		else if(accessToken.length() == 0){  //TODO 예외처리
-			log.info("Empty token");
-			throw new Exception();
-		}
+		jwtUtil.validateToken(accessToken);
+
+		String userId = jwtUtil.getSubject(accessToken);
+		User user = userRepository.findById(Long.parseLong(userId))
+			.orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_USER)); //TODO exception 수정
+		log.info("user : {}", user.getEmail());
+
+		UserThreadLocal.set(user);
 
 		return true;
-		//return HandlerInterceptor.super.preHandle(request, response, handler);
+
 	}
 }
