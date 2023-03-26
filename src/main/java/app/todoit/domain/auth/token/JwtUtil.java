@@ -1,4 +1,4 @@
-package app.todoit.auth.token;
+package app.todoit.domain.auth.token;
 
 import java.security.Key;
 import java.util.Base64;
@@ -7,7 +7,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import app.todoit.auth.entity.User;
+import app.todoit.domain.auth.entity.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -48,7 +48,7 @@ public class JwtUtil {
 	}
 
 	/** rtk 발급 */
-	public String generateRefreshToken(User user){ 
+	public String generateRefreshToken(User user){
 
 		return Jwts.builder()
 			.setSubject(user.getId().toString())
@@ -57,6 +57,11 @@ public class JwtUtil {
 			.claim("email", user.getEmail())
 			.signWith(key, SignatureAlgorithm.HS256)
 			.compact();
+	}
+
+	/** token에서 사용자정보 추출*/
+	public String getSubject(String AccessToken){
+		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(AccessToken).getBody().getSubject();
 	}
 
 	/** 토큰검증 */

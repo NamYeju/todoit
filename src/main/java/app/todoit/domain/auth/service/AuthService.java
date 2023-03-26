@@ -1,15 +1,15 @@
-package app.todoit.auth.service;
+package app.todoit.domain.auth.service;
 
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import app.todoit.auth.dto.KakaoUserDto;
-import app.todoit.auth.dto.TokenDto;
-import app.todoit.auth.entity.User;
-import app.todoit.auth.exception.MemberException;
-import app.todoit.auth.repository.UserRepository;
-import app.todoit.auth.token.JwtUtil;
+import app.todoit.domain.auth.dto.KakaoUserDto;
+import app.todoit.domain.auth.dto.TokenDto;
+import app.todoit.domain.auth.entity.User;
+import app.todoit.domain.auth.exception.MemberException;
+import app.todoit.domain.auth.repository.UserRepository;
+import app.todoit.domain.auth.token.JwtUtil;
 import app.todoit.global.exception.ErrorCode;
 import app.todoit.global.redis.service.RedisService;
 import lombok.RequiredArgsConstructor;

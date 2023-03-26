@@ -1,4 +1,4 @@
-package app.todoit.auth.exception;
+package app.todoit.domain.auth.exception;
 
 import app.todoit.global.exception.ErrorCode;
 import lombok.Getter;

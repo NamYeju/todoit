@@ -1,6 +1,6 @@
-package app.todoit.auth.dto;
+package app.todoit.domain.auth.dto;
 
-import app.todoit.auth.entity.User;
+import app.todoit.domain.auth.entity.User;
 import lombok.Getter;
 
 @Getter
