@@ -21,6 +21,6 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new AuthInterceptor(jwtUtil, userRepository)).addPathPatterns("/**"); //TODO 경로수정
+		registry.addInterceptor(new AuthInterceptor(jwtUtil, userRepository)).addPathPatterns("/api/**"); //TODO 경로수정
 	}
 }
