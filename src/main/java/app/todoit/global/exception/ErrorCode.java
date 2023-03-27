@@ -15,6 +15,8 @@ public enum ErrorCode {
 	FRIENDS_NOT_FOUND(HttpStatus.NOT_FOUND,"친구가 존재하지 않습니다."),
 	ALREADY_FRIENDS(HttpStatus.BAD_REQUEST, "이미 친구입니다."),
 
+	CANNOT_ACCEPT(HttpStatus.NOT_ACCEPTABLE, "친구 수락을 할 수 없습니다"),
+
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다.");
 
 	private final HttpStatus httpStatus;
