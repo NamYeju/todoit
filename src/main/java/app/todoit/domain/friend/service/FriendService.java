@@ -43,6 +43,9 @@ public class FriendService {
         //pending Friend 와 Friend 의 user_id, friend_id 방향 같게 저장
         //친구 수락 (pendingFriends 에서 삭제하고 friend에 추가)
         User friend= getUserEntity(friendId);
+        if (!pendingFriendRepository.existsById(new PendingFriendId(friendId, user.getId()))) {
+            throw new FriendException(ErrorCode.CANNOT_ACCEPT); //친구가 신청을 취소했는데 수락을 누른경우
+        }
         pendingFriendRepository.deleteById(new PendingFriendId(friendId,user.getId()));
         friendRepository.save(new FriendEntity(friend, user));
 
@@ -52,7 +55,7 @@ public class FriendService {
 
     public String deleteFriend (User user, Long friendId) {
         //친구 삭제
-        friendRepository.deleteFriend(user.getId(), friendId); //예외처리 해야함
+        friendRepository.deleteFriend(user.getId(), friendId);
         return "DELETE SUCCESS";
     }
 
