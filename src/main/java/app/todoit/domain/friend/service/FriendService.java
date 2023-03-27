@@ -3,6 +3,7 @@ package app.todoit.domain.friend.service;
 import app.todoit.domain.auth.entity.User;
 import app.todoit.domain.auth.repository.UserRepository;
 import app.todoit.domain.friend.dto.FriendResponseDto;
+import app.todoit.domain.friend.dto.JoinCheckDto;
 import app.todoit.domain.friend.dto.PendingFriendResponseDto;
 import app.todoit.domain.friend.entity.FriendEntity;
 import app.todoit.domain.friend.entity.FriendId;
@@ -14,6 +15,10 @@ import app.todoit.domain.friend.repository.PendingFriendRepository;
 import app.todoit.global.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -60,9 +65,9 @@ public class FriendService {
     }
 
     public PendingFriendResponseDto getPendingFriends (User user) {
-        //수락 대기 목록 조회
+        //내가 친구 신청한 목록
         PendingFriendResponseDto res = new PendingFriendResponseDto();
-        res.entityToDto( pendingFriendRepository.findAllByPendingFriendIdFriendId(user.getId()));
+        res.entityToDto( pendingFriendRepository.findAllByPendingFriendIdUserId(user.getId()));
         return res;
 
     }
@@ -75,8 +80,23 @@ public class FriendService {
         res.entityToDtoByFriend(friendRepository.findByFriendIdFriendId(user.getId())); //내가 수락한 친구
 
         return res;
+    }
 
+    public JoinCheckDto checkJoinByPhone (List<String> phone) {
+        List<User> userEntity = new ArrayList<>();
+        for (String s : phone) {
+            Optional<User> user = userRepository.findByPhone(s);
+            if (user.isPresent()) {
+                userEntity.add(user.get());
+            }
+        }
+        return new JoinCheckDto(userEntity);
+    }
 
+    public PendingFriendResponseDto getNeedAcceptFriendList (User user) { //나한테 온 친구신청 목록 조회
+        PendingFriendResponseDto res = new PendingFriendResponseDto();
+        res.entityToDto( pendingFriendRepository.findAllByPendingFriendIdFriendId(user.getId()));
+        return res;
     }
 
     public User getUserEntity(Long userId) {
