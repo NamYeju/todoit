@@ -10,5 +10,6 @@ import java.util.List;
 
 @Repository
 public interface PendingFriendRepository extends JpaRepository<PendingFriendEntity, PendingFriendId> {
-    List<PendingFriendEntity> findAllByPendingFriendIdFriendId(Long userId);
+    List<PendingFriendEntity> findAllByPendingFriendIdFriendId(Long friendId);
+    List<PendingFriendEntity> findAllByPendingFriendIdUserId(Long userId);
 }
