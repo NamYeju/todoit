@@ -15,7 +15,7 @@ public class TodoTaskDto {
     private Boolean challenge;
 
     public TodoTaskDto toDto (TodoTask entity) {
-        this.taskId=entity.getTodoTaskId();
+        this.taskId=entity.getTaskId();
         this.task=entity.getTask();
         this.complete=entity.getComplete();
         this.challenge=entity.getChallenge();
