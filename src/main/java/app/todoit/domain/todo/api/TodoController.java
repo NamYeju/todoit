@@ -2,6 +2,7 @@ package app.todoit.domain.todo.api;
 
 import app.todoit.domain.auth.entity.User;
 import app.todoit.domain.todo.dto.GetTodoResponseDto;
+import app.todoit.domain.todo.dto.TodoTaskDto;
 import app.todoit.domain.todo.service.TodoService;
 import app.todoit.global.interceptor.UserThreadLocal;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class TodoController {
     public GetTodoResponseDto getTodayTodo (@RequestParam(required = false) String date) {
         User user = UserThreadLocal.get();
         LocalDate now ;
-        if (date.isEmpty()) {
+        if (date==null) {
             now = LocalDate.now();
         }
         else {
@@ -32,25 +33,25 @@ public class TodoController {
     }
 
     @PostMapping("")
-    public void addTask(@RequestBody String task) {
+    public TodoTaskDto addTask(@RequestParam String task) {
         User user = UserThreadLocal.get();
-        todoService.addTask(user, task);
+        return todoService.addTask(user, task);
     }
 
     @DeleteMapping("")
-    public void deleteTask(@RequestParam Long taskId) {
-        todoService.deleteTask(taskId);
+    public String deleteTask(@RequestParam Long taskId) {
+        return todoService.deleteTask(taskId);
 
     }
 
     @PutMapping("")
-    public void modifyTask(@RequestParam Long taskId, @RequestParam String task) {
-        todoService.modifyTask(taskId,task);
+    public TodoTaskDto modifyTask(@RequestParam Long taskId, @RequestParam String task) {
+        return todoService.modifyTask(taskId,task);
     }
 
     @PostMapping("/complete")
-    public void setComplete(@RequestParam Long taskId) {
-        todoService.setComplete(taskId);
+    public TodoTaskDto setComplete(@RequestParam Long taskId) {
+        return todoService.setComplete(taskId);
     }
 
 }

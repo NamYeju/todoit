@@ -5,8 +5,10 @@ import app.todoit.domain.todo.dto.GetTodoResponseDto;
 import app.todoit.domain.todo.dto.TodoTaskDto;
 import app.todoit.domain.todo.entity.Todo;
 import app.todoit.domain.todo.entity.TodoTask;
+import app.todoit.domain.todo.exception.TodoException;
 import app.todoit.domain.todo.repository.TodoTaskRepository;
 import app.todoit.domain.todo.repository.TodoRepository;
+import app.todoit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,16 +24,25 @@ public class TodoService {
     private final TodoTaskRepository todoTaskRepository;
 
     public GetTodoResponseDto getTodayTodo (User user, LocalDate date) {
-        if (!todoRepository.findByDateAndUserId(date, user.getId()).isPresent()) {
+        Optional<Todo> todo = todoRepository.findByDateAndUserId(date, user.getId());
+        Todo present;
+        if (!todo.isPresent()) {
             //새 투두 생성
-            todoRepository.save(new Todo(user, date));
+            present = todoRepository.save(new Todo(user, date));
         }
-        List<TodoTask> taskEntity = todoTaskRepository.findAllByTodoIdDate(date);
-        List<TodoTaskDto> taskDto = listEntityToListDto(taskEntity);
-        GetTodoResponseDto res = GetTodoResponseDto.builder()
-                .date(date)
-                .task(taskDto)
-                .build();
+        else { present= todo.get();}
+
+        Optional<List<TodoTask>> taskEntity = todoTaskRepository.findAllByTodoTodoId(present.getTodoId());
+        GetTodoResponseDto res = new GetTodoResponseDto(date);
+
+        if (taskEntity.isPresent()) {
+            List<TodoTaskDto> taskDto = listEntityToListDto(taskEntity.get());
+            res = GetTodoResponseDto.builder()
+                    .date(date)
+                    .task(taskDto)
+                    .build();
+        }
+
         return res;
     }
 
@@ -44,35 +55,43 @@ public class TodoService {
         return res;
     }
 
-    public void addTask (User user, String task) {
-        todoTaskRepository.save(new TodoTask(task));
+    public TodoTaskDto addTask (User user, String task) {
+        Todo todo = todoRepository.findByDateAndUserId(LocalDate.now(), user.getId()).get();
+        TodoTask save = todoTaskRepository.save(new TodoTask(task, todo));
+        return new TodoTaskDto().toDto(save);
     }
 
-    public void deleteTask(Long taskId) {
+    public String deleteTask(Long taskId) {
         // TODO: 2023/03/28 cascade처리해야함
-        todoTaskRepository.deleteById(taskId);
+        // TODO: 2023/03/30  내 투두번호가 아니면 삭제 unauthorized 뱉기
+        if (!todoTaskRepository.findById(taskId).isPresent()) throw new TodoException(ErrorCode.TASK_NOT_FOUND);
+        else todoTaskRepository.deleteById(taskId);
+        return "DElETE SUCCESS";
     }
 
-    public void modifyTask(Long taskId, String newTask) {
+    public TodoTaskDto modifyTask(Long taskId, String newTask) {
+        // TODO: 2023/03/30  내 투두번호가 아니면 삭제 unauthorized 뱉기
         Optional<TodoTask> task = todoTaskRepository.findById(taskId);
         if (task.isPresent()) {
             task.get().setTask(newTask);
-            todoTaskRepository.save(task.get());
+            TodoTask save = todoTaskRepository.save(task.get());
+            return new TodoTaskDto().toDto(save);
         }
         else {
-
-            //throws new "해당 태스크가 없습니다."
+            throw new TodoException(ErrorCode.TASK_NOT_FOUND);
         }
     }
 
-    public void setComplete(Long taskId) {
+    public TodoTaskDto setComplete(Long taskId) {
+        // TODO: 2023/03/30  내 투두번호가 아니면 삭제 unauthorized 뱉기
         Optional<TodoTask> task = todoTaskRepository.findById(taskId);
         if (task.isPresent()) {
             task.get().setComplete();
-            todoTaskRepository.save(task.get());
+            TodoTask save = todoTaskRepository.save(task.get());
+            return new TodoTaskDto().toDto(save);
         }
         else {
-            //throws new "해당 태스크가 없습니다."
+            throw new TodoException(ErrorCode.TASK_NOT_FOUND);
         }
 
     }
