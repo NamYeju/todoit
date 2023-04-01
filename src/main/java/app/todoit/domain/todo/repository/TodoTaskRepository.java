@@ -7,10 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TodoTaskRepository extends JpaRepository<TodoTask,Long> {
     //@Query(value = "SELECT k FROM TodoTask k JOIN FETCH k.todoId t WHERE t.date = :date ")
-    List<TodoTask> findAllByTodoIdDate (LocalDate date);
+    Optional<List<TodoTask>> findAllByTask ( String task);
 
+    Optional<List<TodoTask>> findAllByTodoTodoId (Long todoId);
 }
