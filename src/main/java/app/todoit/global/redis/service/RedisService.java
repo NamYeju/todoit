@@ -20,6 +20,18 @@ public class RedisService {
 	public final static long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24;
 	public final static long REFRESH_TOKEN_VALIDATION_TIME = 1000L * 60 * 60 * 24 * 14;
 
+
+	public void saveCode(String email, String code){
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+		valueOperations.set("email:" + email,  code, Duration.ofMillis(1000L * 60 * 5)); // 5분
+	}
+
+	public String getCode(String email){
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+		return valueOperations.get("email:"+email);
+	}
+
+
 	public void saveToken(User user, String atk, String rtk){
 		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
@@ -28,8 +40,6 @@ public class RedisService {
 
 		log.info("redis atk : {}", valueOperations.get("atk:"+user.getId().toString()));
 		log.info("redis rtk : {}", valueOperations.get("rtk:"+user.getId().toString()));
-
-
 
 	}
 
