@@ -19,6 +19,8 @@ public enum ErrorCode {
 
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
 
+	TODO_UNAUTHORIZED ( HttpStatus.BAD_REQUEST, "해당 태스크에 대한 권한이 없습니다"),
+
 	TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 투두 번호입니다.");
 
 	private final HttpStatus httpStatus;

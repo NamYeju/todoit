@@ -61,39 +61,63 @@ public class TodoService {
         return new TodoTaskDto().toDto(save);
     }
 
-    public String deleteTask(Long taskId) {
+    public String deleteTask(User user, Long taskId) {
         // TODO: 2023/03/28 cascade처리해야함
-        // TODO: 2023/03/30  내 투두번호가 아니면 삭제 unauthorized 뱉기
-        if (!todoTaskRepository.findById(taskId).isPresent()) throw new TodoException(ErrorCode.TASK_NOT_FOUND);
-        else todoTaskRepository.deleteById(taskId);
-        return "DElETE SUCCESS";
+        Optional<TodoTask> task = todoTaskRepository.findById(taskId);
+        if (!task.isPresent()){
+            throw new TodoException(ErrorCode.TASK_NOT_FOUND);
+        }
+        else {
+            if (!getUserIdFromTask(task.get()).equals(user.getId())) {
+                throw new TodoException(ErrorCode.TODO_UNAUTHORIZED);
+            }
+            else  {
+                todoTaskRepository.deleteById(taskId);
+                return "DElETE SUCCESS";
+            }
+        }
+
     }
 
-    public TodoTaskDto modifyTask(Long taskId, String newTask) {
-        // TODO: 2023/03/30  내 투두번호가 아니면 삭제 unauthorized 뱉기
+    public TodoTaskDto modifyTask(User user, Long taskId, String newTask) {
+
         Optional<TodoTask> task = todoTaskRepository.findById(taskId);
         if (task.isPresent()) {
-            task.get().setTask(newTask);
-            TodoTask save = todoTaskRepository.save(task.get());
-            return new TodoTaskDto().toDto(save);
+            if (!getUserIdFromTask(task.get()).equals(user.getId())) {
+                throw new TodoException(ErrorCode.TODO_UNAUTHORIZED);
+            }
+            else {
+                task.get().setTask(newTask);
+                TodoTask save = todoTaskRepository.save(task.get());
+                return new TodoTaskDto().toDto(save);
+            }
         }
         else {
             throw new TodoException(ErrorCode.TASK_NOT_FOUND);
         }
     }
 
-    public TodoTaskDto setComplete(Long taskId) {
-        // TODO: 2023/03/30  내 투두번호가 아니면 삭제 unauthorized 뱉기
+    public TodoTaskDto setComplete(User user, Long taskId) {
+
         Optional<TodoTask> task = todoTaskRepository.findById(taskId);
         if (task.isPresent()) {
-            task.get().setComplete();
-            TodoTask save = todoTaskRepository.save(task.get());
-            return new TodoTaskDto().toDto(save);
+            if (!getUserIdFromTask(task.get()).equals(user.getId())) {
+                throw new TodoException(ErrorCode.TODO_UNAUTHORIZED);
+            }
+            else {
+                task.get().setComplete();
+                TodoTask save = todoTaskRepository.save(task.get());
+                return new TodoTaskDto().toDto(save);
+            }
         }
         else {
             throw new TodoException(ErrorCode.TASK_NOT_FOUND);
         }
 
+    }
+
+    public Long getUserIdFromTask (TodoTask task) {
+        return task.getTodo().getUser().getId();
     }
 
 }
