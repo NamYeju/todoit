@@ -1,6 +1,7 @@
 package app.todoit.global.exception;
 
 import app.todoit.domain.friend.exception.FriendException;
+import app.todoit.domain.todo.exception.TodoException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<ErrorResponse> friendException (FriendException e) {
 		log.error("friend exception : {}", e.getErrorCode().getMessage());
+		return ErrorResponse.toResponse(e.getErrorCode());
+	}
+
+	@ExceptionHandler
+	public ResponseEntity<ErrorResponse> todoException (TodoException e) {
+		log.error("todo exception : {}", e.getErrorCode().getMessage());
 		return ErrorResponse.toResponse(e.getErrorCode());
 	}
 }

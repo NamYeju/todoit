@@ -25,6 +25,7 @@ public class TodoController {
             now = LocalDate.now();
         }
         else {
+            // TODO: 2023/04/02 날짜 데이터 포맷 변환 코드 수정 필요
             DateTimeFormatter format =DateTimeFormatter.ofPattern("yyyy-MM-yy");
             now = LocalDate.parse(date,format);
         }
@@ -40,18 +41,21 @@ public class TodoController {
 
     @DeleteMapping("")
     public String deleteTask(@RequestParam Long taskId) {
-        return todoService.deleteTask(taskId);
+        User user = UserThreadLocal.get();
+        return todoService.deleteTask(user, taskId);
 
     }
 
     @PutMapping("")
     public TodoTaskDto modifyTask(@RequestParam Long taskId, @RequestParam String task) {
-        return todoService.modifyTask(taskId,task);
+        User user = UserThreadLocal.get();
+        return todoService.modifyTask(user, taskId,task);
     }
 
     @PostMapping("/complete")
     public TodoTaskDto setComplete(@RequestParam Long taskId) {
-        return todoService.setComplete(taskId);
+        User user = UserThreadLocal.get();
+        return todoService.setComplete(user, taskId);
     }
 
 }

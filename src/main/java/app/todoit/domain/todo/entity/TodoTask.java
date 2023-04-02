@@ -18,10 +18,10 @@ public class TodoTask {
     private Long taskId;
 
     @JoinColumn(name = "todo_id")
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne()
     private Todo todo;
 
-    @Column(nullable = false)
+    @Column
     private String task;
 
     @Column

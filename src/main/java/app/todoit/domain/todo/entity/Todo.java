@@ -35,7 +35,7 @@ public class Todo {
     @Column
     private LocalDate date;
 
-    @OneToMany(mappedBy = "taskId", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "taskId", cascade = CascadeType.ALL, orphanRemoval = true)
     /*
     *   mappedBy는 연관관계의 주인이 아닌쪽에 작성
     *   mappedBy의 값은 반대편에 자신이 매핑되어있는 >필드<명
