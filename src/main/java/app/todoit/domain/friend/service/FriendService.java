@@ -12,6 +12,8 @@ import app.todoit.domain.friend.entity.PendingFriendId;
 import app.todoit.domain.friend.exception.FriendException;
 import app.todoit.domain.friend.repository.FriendRepository;
 import app.todoit.domain.friend.repository.PendingFriendRepository;
+import app.todoit.domain.todo.entity.TodoTask;
+import app.todoit.domain.todo.exception.TodoException;
 import app.todoit.global.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -60,14 +62,20 @@ public class FriendService {
 
     public String deleteFriend (User user, Long friendId) {
         //친구 삭제
-        friendRepository.deleteFriend(user.getId(), friendId);
-        return "DELETE SUCCESS";
+        Integer friend = friendRepository.exists(user.getId(), friendId);
+        if (!friend.equals(1)){
+            throw new FriendException((ErrorCode.FRIENDS_NOT_FOUND));
+        }
+        else {
+            friendRepository.deleteFriend(user.getId(), friendId);
+            return "DElETE SUCCESS";
+            }
     }
 
     public PendingFriendResponseDto getPendingFriends (User user) {
         //내가 친구 신청한 목록
         PendingFriendResponseDto res = new PendingFriendResponseDto();
-        res.entityToDto( pendingFriendRepository.findAllByPendingFriendIdUserId(user.getId()));
+        res.entityToDtoByMe( pendingFriendRepository.findAllByPendingFriendIdUserId(user.getId()));
         return res;
 
     }
@@ -95,7 +103,7 @@ public class FriendService {
 
     public PendingFriendResponseDto getNeedAcceptFriendList (User user) { //나한테 온 친구신청 목록 조회
         PendingFriendResponseDto res = new PendingFriendResponseDto();
-        res.entityToDto( pendingFriendRepository.findAllByPendingFriendIdFriendId(user.getId()));
+        res.entityToDtoByOthers( pendingFriendRepository.findAllByPendingFriendIdFriendId(user.getId()));
         return res;
     }
 

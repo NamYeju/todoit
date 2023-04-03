@@ -9,28 +9,29 @@ import app.todoit.domain.friend.entity.PendingFriendEntity;
 import app.todoit.domain.friend.service.FriendService;
 import app.todoit.global.interceptor.UserThreadLocal;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/friend")
 public class FriendController {
     private final FriendService friendService;
-    @PostMapping("/")
+    @PostMapping("")
     public String addFriend (@RequestParam Long friendId) { //친구 신청
         User user = UserThreadLocal.get();
         return friendService.addFriend(user,friendId);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public FriendResponseDto getFriendList() { //양방향 친구 목록
         User user = UserThreadLocal.get();
         return friendService.getFriendsList(user);
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public String deleteFriend(@RequestParam Long friendId) { //친구 삭제 (누가하든 상관없음)
         User user = UserThreadLocal.get();
         return friendService.deleteFriend(user,friendId);

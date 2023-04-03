@@ -25,9 +25,7 @@ public class TodoController {
             now = LocalDate.now();
         }
         else {
-            // TODO: 2023/04/02 날짜 데이터 포맷 변환 코드 수정 필요
-            DateTimeFormatter format =DateTimeFormatter.ofPattern("yyyy-MM-yy");
-            now = LocalDate.parse(date,format);
+            now = LocalDate.parse(date);
         }
 
         return todoService.getTodayTodo(user, now);
