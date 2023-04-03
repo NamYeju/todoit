@@ -23,10 +23,8 @@ public interface FriendRepository extends JpaRepository<FriendEntity, FriendId> 
     void deleteFriend (@Param(value = "userId") Long userId, @Param(value = "friendId") Long friendId);
 
 
-    @Query(nativeQuery = true, value = "COUNT (*) FROM FRIENDS WHERE (user_id=?1 AND friend_id=?2) " +
+    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM FRIENDS WHERE (user_id=?1 AND friend_id=?2) " +
             "OR (user_id=?2 AND friend_id=?1 ) ")
-    @Modifying
-    @Transactional
     Integer exists (@Param(value="userId") Long userId, @Param(value = "friendId") Long friendId);
 
     List<FriendEntity> findByUserId(Long userId);

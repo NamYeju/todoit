@@ -12,7 +12,19 @@ public class PendingFriendResponseDto {
     List<UserInfoDto> friend_list;
 
     @Builder
-    public void entityToDto (List<PendingFriendEntity> entities) {
+    public void entityToDtoByMe (List<PendingFriendEntity> entities) {
+        friend_list = new ArrayList<>();
+        for (PendingFriendEntity e : entities) {
+            UserInfoDto infoDto = new UserInfoDto();
+            infoDto.setNickname(e.getFriend().getNickname());
+            infoDto.setUserId(e.getFriend().getId());
+            infoDto.setPhone(e.getFriend().getPhone());
+            this.friend_list.add(infoDto);
+        }
+    }
+
+    @Builder
+    public void entityToDtoByOthers (List<PendingFriendEntity> entities) {
         friend_list = new ArrayList<>();
         for (PendingFriendEntity e : entities) {
             UserInfoDto infoDto = new UserInfoDto();
