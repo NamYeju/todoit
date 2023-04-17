@@ -1,7 +1,7 @@
 package app.todoit.domain.challenge.dto;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -13,7 +13,7 @@ public class ChallengeDto {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class Request {
+	public static class Create {
 		private String title;
 
 		private String[] day;
@@ -24,14 +24,13 @@ public class ChallengeDto {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
 		private Date end_date;
 
-		private List<Challenger> friends;
-		private Challenger inviter;
+		private Optional<Challenger> friends;
 
 	}
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class Challenger{
+	public static class Challenger{ //TODO 임시데이터
 		String nickname;
 		String phone;
 	}
