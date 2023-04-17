@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,16 +34,16 @@ public class Challenge {
 
 	private String title;
 	private String content;
-	private String day;
+	private String day; //TODO json array (1) Converter (2)string (3) day entity
 	private String off_day;
 	private Date start_date;
 	private Date end_date;
 	private boolean status;
 
-	@OneToMany(mappedBy = "challenge")
+	@OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private List<Challenger> challengers = new ArrayList<>();
 
-	void addChallenger(Challenger challenger){
+	public void addChallenger(Challenger challenger){
 		this.challengers.add(challenger);
 		if(challenger.getChallenge() != this){
 			challenger.setChallenge(this);
