@@ -43,4 +43,17 @@ public class RedisService {
 
 	}
 
+	public String getRefreshToken(User user){
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+		return valueOperations.get("rtk:"+user.getId());
+	}
+
+	public void saveAccessToken(User user, String atk){
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+
+		valueOperations.set("atk:" + user.getId().toString(),  atk, Duration.ofMillis(ACCESS_TOKEN_EXPIRE_TIME));
+
+		log.info("redis atk : {}", valueOperations.get("atk:"+user.getId().toString()));
+	}
+
 }
