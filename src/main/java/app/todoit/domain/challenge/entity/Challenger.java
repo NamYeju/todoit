@@ -55,8 +55,11 @@ public class Challenger {
 
 	public void setChallenge(Challenge challenge){
 		this.challenge = challenge;
-		if(!challenge.getChallengers().contains(this)){
-			challenge.getChallengers().add(this);
-		}
+		// if(!challenge.getChallengers().contains(this)){
+		// 	challenge.getChallengers().add(this);
+		// }
+	}
+	public void setUser(User user){
+		this.user = user;
 	}
 }

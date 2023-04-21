@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import antlr.Token;
 import app.todoit.domain.auth.dto.JoinRequestDto;
 import app.todoit.domain.auth.dto.KakaoUserDto;
 import app.todoit.domain.auth.dto.TokenDto;
@@ -60,5 +61,23 @@ public class AuthService {
 
 		return TokenDto.builder().email(user.get().getEmail())
 			.accessToken(atk).refreshToken(rtk).build();
+	}
+
+	public TokenDto reissue(String refreshToken){
+		jwtUtil.validateToken(refreshToken);
+
+		String reqUserId = jwtUtil.getSubject(refreshToken);
+		Optional<User> user = userRepository.findById(Long.parseLong(reqUserId));
+
+		String savedRefreshToken = redisService.getRefreshToken(user.get());
+
+		if(!refreshToken.equals(savedRefreshToken)){
+			// TODO 예외처리
+		}
+		String atk = jwtUtil.generateAccessToken(user.get());
+		redisService.saveAccessToken(user.get(), atk);
+
+		return TokenDto.builder().email(user.get().getEmail())
+			.accessToken(atk).refreshToken(refreshToken).build();
 	}
 }

@@ -3,6 +3,7 @@ package app.todoit.domain.auth.api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,6 +48,13 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity login(@RequestBody KakaoUserDto kakaoUserDto){
 		TokenDto tokenDto = authService.login(kakaoUserDto);
+		return ResponseEntity.ok().body(tokenDto);
+	}
+
+	@WithOutAuth
+	@PostMapping("/reissue")
+	public ResponseEntity reissue(@RequestHeader("Authorization") String refreshToken){
+		TokenDto tokenDto = authService.reissue(refreshToken);
 		return ResponseEntity.ok().body(tokenDto);
 	}
 }
