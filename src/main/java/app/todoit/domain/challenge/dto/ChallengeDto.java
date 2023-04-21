@@ -1,7 +1,7 @@
 package app.todoit.domain.challenge.dto;
 
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -14,8 +14,9 @@ public class ChallengeDto {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Create {
-		private String title;
 
+		private String title;
+		private String content;
 		private String[] day;
 		private String[] off_day;
 
@@ -24,7 +25,7 @@ public class ChallengeDto {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
 		private Date end_date;
 
-		private Optional<Challenger> friends;
+		private List<Challenger> friends;
 
 	}
 	@Getter

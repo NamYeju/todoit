@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import app.todoit.domain.auth.entity.User;
+import app.todoit.domain.auth.exception.MemberException;
 import app.todoit.domain.auth.repository.UserRepository;
 import app.todoit.domain.challenge.dto.ChallengeDto;
 import app.todoit.domain.challenge.entity.Challenge;
@@ -14,6 +16,7 @@ import app.todoit.domain.challenge.entity.InviteStatus;
 import app.todoit.domain.challenge.entity.Role;
 import app.todoit.domain.challenge.repository.ChallengeRepository;
 import app.todoit.domain.challenge.repository.ChallengerRepository;
+import app.todoit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,12 +29,13 @@ public class ChallengeService {
 	private final ChallengeRepository challengeRepository;
 	private final ChallengerRepository challengerRepository;
 
+	@Transactional
 	public void registerChallenge(User user, ChallengeDto.Create request) {
 
 		// 챌린지 생성
 		Challenge newChallenge = Challenge.builder()
 			.title(request.getTitle())
-			.content(null)
+			.content(request.getContent())
 			.day(Arrays.toString(request.getDay()))
 			.off_day(Arrays.toString(request.getOff_day()))
 			.start_date(request.getStart_date())
@@ -41,7 +45,7 @@ public class ChallengeService {
 
 		challengeRepository.save(newChallenge);
 
-		// 챌린지를 생성한 챌린저 DB에 저장
+		// // 챌린지를 생성한 챌린저 DB에 저장
 		Challenger leader = Challenger.builder()
 			.challenge(newChallenge)
 			.user(user)
@@ -50,20 +54,32 @@ public class ChallengeService {
 			.startDate(request.getStart_date())
 			.build();
 
+		leader.setUser(user);
+		user.getUserInChallenge().add(leader);
+
+		leader.setChallenge(newChallenge);
+		newChallenge.getChallengers().add(leader);
+
 		challengerRepository.save(leader);
 
-		newChallenge.addChallenger(leader);
-		leader.setChallenge(newChallenge);
 
 		// 챌린지 초대 보내기
-		if(request.getFriends().isPresent()){
+
+		if(request.getFriends().size() != 0){
 			request.getFriends().stream()
 				.map(f -> {
 					Optional<User> newUser = userRepository.findByPhone(f.getPhone());
-					return inviteChallengers(newChallenge, newUser.get());
+					if(newUser.isPresent())
+						return inviteChallengers(newChallenge, newUser.get());
+					else throw new MemberException(ErrorCode.NOT_FOUND_USER);
 				})
-				.forEach(c -> challengerRepository.save(c));
+				.forEach(challengerRepository::save);
 		}
+		if(request.getFriends().size() == 0){
+			log.info("친구신청 존재 x");
+		}
+
+
 
 
 	}
