@@ -40,14 +40,15 @@ public class Challenge {
 	private Date end_date;
 	private boolean status;
 
-	@OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	@Builder.Default
+	@OneToMany(mappedBy = "challenge", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private List<Challenger> challengers = new ArrayList<>();
 
 	public void addChallenger(Challenger challenger){
 		this.challengers.add(challenger);
-		if(challenger.getChallenge() != this){
-			challenger.setChallenge(this);
-		}
+		// if(challenger.getChallenge() != this){
+		// 	challenger.setChallenge(this);
+		// }
 
 	}
 }
