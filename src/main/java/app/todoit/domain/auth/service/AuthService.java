@@ -52,14 +52,15 @@ public class AuthService {
 
 	public TokenDto login(KakaoUserDto kakaoUserDto){
 		User reqUser = kakaoUserDto.toEntity();
-		Optional<User> user = userRepository.findByEmail(reqUser.getEmail());
+		User user = userRepository.findByEmail(reqUser.getEmail())
+			.orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_USER));
 
-		String atk = jwtUtil.generateAccessToken(user.get());
-		String rtk = jwtUtil.generateRefreshToken(user.get());
+		String atk = jwtUtil.generateAccessToken(user);
+		String rtk = jwtUtil.generateRefreshToken(user);
 
-		redisService.saveToken(user.get(), atk, rtk);
+		redisService.saveToken(user, atk, rtk);
 
-		return TokenDto.builder().email(user.get().getEmail())
+		return TokenDto.builder().email(user.getEmail())
 			.accessToken(atk).refreshToken(rtk).build();
 	}
 
