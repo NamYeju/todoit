@@ -46,6 +46,8 @@ public class SmsController {
 	@PostMapping("/sms-verification")
 	public ResponseEntity verify(@RequestBody CodeVerifyRequest codeVerifyRequest) {
 		String savedCode = redisService.getCode(codeVerifyRequest.getEmail());
+		log.info("{}", codeVerifyRequest.getEmail());
+		log.info("{}", codeVerifyRequest.getCode());
 
 		if (codeVerifyRequest.getCode().equals(savedCode))
 			return ResponseEntity.status(200)
