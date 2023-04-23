@@ -13,6 +13,7 @@ import app.todoit.domain.auth.repository.UserRepository;
 import app.todoit.domain.auth.token.JwtUtil;
 import app.todoit.global.annotation.WithOutAuth;
 import app.todoit.global.exception.ErrorCode;
+import app.todoit.global.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,10 +23,12 @@ public class AuthInterceptor implements HandlerInterceptor {
 	public final static String AUTHORIZATION = "Authorization";
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
+	private final RedisService redisService;
 
-	public AuthInterceptor(JwtUtil jwtUtil, UserRepository userRepository) {
+	public AuthInterceptor(JwtUtil jwtUtil, UserRepository userRepository, RedisService redisService) {
 		this.jwtUtil = jwtUtil;
 		this.userRepository = userRepository;
+		this.redisService = redisService;
 	}
 
 	@Override
@@ -42,13 +45,15 @@ public class AuthInterceptor implements HandlerInterceptor {
 				log.error("{}", "요청헤더에 토큰이 존재하지 않습니다.");
 				throw new MemberException(ErrorCode.UNAUTHORIZED);
 			}
-
 			jwtUtil.validateToken(accessToken);
 
 			String userId = jwtUtil.getSubject(accessToken);
 			User user = userRepository.findById(Long.parseLong(userId))
 				.orElseThrow(()->new MemberException(ErrorCode.NOT_FOUND_USER)); //TODO exception 수정
 			log.info("user : {}", user.getEmail());
+
+			// 로그아웃 체크
+			redisService.isExisted(user);
 
 			UserThreadLocal.set(user);
 

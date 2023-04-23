@@ -11,8 +11,10 @@ import app.todoit.domain.auth.dto.JoinRequestDto;
 import app.todoit.domain.auth.dto.KakaoUserDto;
 import app.todoit.domain.auth.dto.KakaoUserResponse;
 import app.todoit.domain.auth.dto.TokenDto;
+import app.todoit.domain.auth.entity.User;
 import app.todoit.domain.auth.service.AuthService;
 import app.todoit.global.annotation.WithOutAuth;
+import app.todoit.global.interceptor.UserThreadLocal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,4 +59,12 @@ public class AuthController {
 		TokenDto tokenDto = authService.reissue(refreshToken);
 		return ResponseEntity.ok().body(tokenDto);
 	}
+
+	@PostMapping("/logout")
+	public ResponseEntity logout(){
+		User user = UserThreadLocal.get();
+		User logoutUser = authService.logout(user);
+		return ResponseEntity.ok().body(logoutUser.getEmail() + ": logout success");
+	}
+
 }

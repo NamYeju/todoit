@@ -7,6 +7,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import app.todoit.domain.auth.entity.User;
+import app.todoit.domain.auth.exception.MemberException;
+import app.todoit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,12 +50,24 @@ public class RedisService {
 		return valueOperations.get("rtk:"+user.getId());
 	}
 
+	public void isExisted(User user){
+		String s = redisTemplate.opsForValue().get("rtk:" + user.getId());
+		if(s == null){
+			throw new MemberException(ErrorCode.LOGOUT_USER);
+		}
+	}
+
 	public void saveAccessToken(User user, String atk){
 		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
 		valueOperations.set("atk:" + user.getId().toString(),  atk, Duration.ofMillis(ACCESS_TOKEN_EXPIRE_TIME));
 
 		log.info("redis atk : {}", valueOperations.get("atk:"+user.getId().toString()));
+	}
+
+	public void deleteToken(User user){
+		redisTemplate.opsForValue().getAndDelete("atk:" + user.getId().toString());
+		redisTemplate.opsForValue().getAndDelete("rtk:" + user.getId().toString());
 	}
 
 }
