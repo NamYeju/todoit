@@ -81,4 +81,10 @@ public class AuthService {
 		return TokenDto.builder().email(user.get().getEmail())
 			.accessToken(atk).refreshToken(refreshToken).build();
 	}
+
+	public User logout(User user){
+		redisService.deleteToken(user);
+		return user;
+	}
+
 }

@@ -13,4 +13,8 @@ public class UserThreadLocal {
 		return threadLocal.get();
 	}
 
+	public static void delete(){
+		threadLocal.remove();
+	}
+
 }
