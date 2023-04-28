@@ -51,7 +51,9 @@ public class FriendController {
 
     @PostMapping("/join")
     public JoinCheckDto checkJoin (@RequestBody List<String> phone) { //핸드폰 번호로 가입한 사용자인지 확인
-        return friendService.checkJoinByPhone (phone);
+        User user = UserThreadLocal.get();
+
+        return friendService.checkJoinByPhone (user, phone);
     }
 
     @GetMapping("/accept")

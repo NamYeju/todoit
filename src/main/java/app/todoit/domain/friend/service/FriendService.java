@@ -90,12 +90,15 @@ public class FriendService {
         return res;
     }
 
-    public JoinCheckDto checkJoinByPhone (List<String> phone) {
+    public JoinCheckDto checkJoinByPhone (User user, List<String> phone) {
         List<User> userEntity = new ArrayList<>();
         for (String s : phone) {
-            Optional<User> user = userRepository.findByPhone(s);
-            if (user.isPresent()) {
-                userEntity.add(user.get());
+            Optional<User> join = userRepository.findByPhone(s);
+            if (join.isPresent()) {
+                if (friendRepository.exists(user.getId(),join.get().getId())==0 &&
+                pendingFriendRepository.exists(user.getId(),join.get().getId())==0) {
+                    userEntity.add(join.get());
+                }
             }
         }
         return new JoinCheckDto(userEntity);
