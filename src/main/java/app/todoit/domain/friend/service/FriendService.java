@@ -38,11 +38,11 @@ public class FriendService {
         }
         else if (pendingFriendRepository.existsById(p.getPendingFriendId())) { //이미 신청한 상태면 신청 취소
             pendingFriendRepository.deleteById(p.getPendingFriendId());
-            return "FRIEND CANCEL SUCCESS";
+            return "친구 신청 취소 성공";
         }
         else {
             pendingFriendRepository.save(p);
-            return "FRIEND ADD SUCCESS";
+            return "친구 신청 성공";
         }
     }
 
@@ -56,7 +56,7 @@ public class FriendService {
         pendingFriendRepository.deleteById(new PendingFriendId(friendId,user.getId()));
         friendRepository.save(new FriendEntity(friend, user));
 
-        return "ACCEPT SUCCESS";
+        return "친구 신청 수락 성공";
 
     }
 
@@ -68,7 +68,7 @@ public class FriendService {
         }
         else {
             friendRepository.deleteFriend(user.getId(), friendId);
-            return "DElETE SUCCESS";
+            return "친구 삭제 성공";
             }
     }
 
