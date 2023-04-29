@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -52,7 +53,13 @@ public class FriendController {
     @PostMapping("/join")
     public JoinCheckDto checkJoin (@RequestBody List<String> phone) { //핸드폰 번호로 가입한 사용자인지 확인
         User user = UserThreadLocal.get();
-
+        Iterator<String> iter = phone.iterator();
+        while (iter.hasNext()) {
+            String num = iter.next();
+            if (num.equals(user.getPhone())) {
+                iter.remove();
+            }
+        }
         return friendService.checkJoinByPhone (user, phone);
     }
 

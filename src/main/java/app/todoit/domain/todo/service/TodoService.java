@@ -73,7 +73,7 @@ public class TodoService {
             }
             else  {
                 todoTaskRepository.deleteById(taskId);
-                return "DElETE SUCCESS";
+                return "태스크 삭제 성공";
             }
         }
 
