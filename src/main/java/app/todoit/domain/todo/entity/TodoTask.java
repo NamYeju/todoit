@@ -1,5 +1,6 @@
 package app.todoit.domain.todo.entity;
 
+import app.todoit.domain.challenge.entity.Challenge;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,17 +29,16 @@ public class TodoTask {
     private Boolean complete;
 
     @Column
-    private Boolean challenge;
+    private Boolean isFromChallenge;
 
-//    @Column(name = "challenge_id")
-//    @ManyToOne
-//    @JoinColumn
-//    private Long challengeId; //챌린지 엔티티 정해지면 타입을 챌린지로 변경해야함
+    @ManyToOne
+    @JoinColumn(name = "challenge_id")
+    private Challenge challenge;
 
     public TodoTask (String task, Todo todo) {
         this.task=task;
         this.complete=false;
-        this.challenge=false;
+        this.isFromChallenge=false;
         this.todo= todo;
     }
 
