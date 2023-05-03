@@ -1,6 +1,7 @@
 package app.todoit.domain.todo.entity;
 
 import app.todoit.domain.challenge.entity.Challenge;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "todo_task")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 public class TodoTask {
     @Id
