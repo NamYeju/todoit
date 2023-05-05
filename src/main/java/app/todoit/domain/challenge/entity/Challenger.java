@@ -1,5 +1,6 @@
 package app.todoit.domain.challenge.entity;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -49,9 +50,9 @@ public class Challenger {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@Temporal(TemporalType.DATE)
+	//@Temporal(TemporalType.DATE)
 	@Column(name = "start_date")
-	private Date startDate;
+	private LocalDate startDate;
 
 	public void setChallenge(Challenge challenge){
 		this.challenge = challenge;

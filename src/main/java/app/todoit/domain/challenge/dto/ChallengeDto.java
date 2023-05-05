@@ -1,7 +1,10 @@
 package app.todoit.domain.challenge.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -20,10 +23,10 @@ public class ChallengeDto {
 		private String[] day;
 		private String[] off_day;
 
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
-		private Date start_date;
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
-		private Date end_date;
+		@DateTimeFormat(pattern = "yyyy-mm-dd")
+		private LocalDate start_date;
+		@DateTimeFormat( pattern = "yyyy-mm-dd")
+		private LocalDate end_date;
 
 		private List<Challenger> friends;
 

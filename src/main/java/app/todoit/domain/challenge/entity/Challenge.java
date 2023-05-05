@@ -1,5 +1,6 @@
 package app.todoit.domain.challenge.entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,8 +13,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import app.todoit.domain.todo.entity.TodoTask;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,13 +39,16 @@ public class Challenge {
 	private String content;
 	private String day; //TODO json array (1) Converter (2)string (3) day entity
 	private String off_day;
-	private Date start_date;
-	private Date end_date;
+	private LocalDate start_date;
+	private LocalDate end_date;
 	private boolean status;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "challenge", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private List<Challenger> challengers = new ArrayList<>();
+
+	@OneToOne(mappedBy = "challenge")
+	private TodoTask todoTask;
 
 	public void addChallenger(Challenger challenger){
 		this.challengers.add(challenger);
