@@ -1,7 +1,12 @@
 package app.todoit.domain.challenge.service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +21,10 @@ import app.todoit.domain.challenge.entity.InviteStatus;
 import app.todoit.domain.challenge.entity.Role;
 import app.todoit.domain.challenge.repository.ChallengeRepository;
 import app.todoit.domain.challenge.repository.ChallengerRepository;
+import app.todoit.domain.todo.entity.Todo;
+import app.todoit.domain.todo.entity.TodoTask;
+import app.todoit.domain.todo.repository.TodoRepository;
+import app.todoit.domain.todo.repository.TodoTaskRepository;
 import app.todoit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +37,8 @@ public class ChallengeService {
 	private final UserRepository userRepository;
 	private final ChallengeRepository challengeRepository;
 	private final ChallengerRepository challengerRepository;
+	private final TodoRepository todoRepository;
+	private final TodoTaskRepository todoTaskRepository;
 
 	@Transactional
 	public void registerChallenge(User user, ChallengeDto.Create request) {
@@ -64,7 +75,6 @@ public class ChallengeService {
 
 
 		// 챌린지 초대 보내기
-
 		if(request.getFriends().size() != 0){
 			request.getFriends().stream()
 				.map(f -> {
@@ -79,6 +89,7 @@ public class ChallengeService {
 			log.info("친구신청 존재 x");
 		}
 
+		linkChallengeTodo(user, newChallenge);
 
 
 
@@ -92,4 +103,37 @@ public class ChallengeService {
 			.startDate(challenge.getStart_date()) // TODO 초대 날짜에 따라 개인 시작 날짜 다르게
 			.build();
 	}
+
+	public void linkChallengeTodo(User user, Challenge challenge){
+		getDatesBetweenTwoDates(challenge.getStart_date(), challenge.getEnd_date())
+			.stream()
+				.forEach(date -> {
+					Optional<Todo> todo = todoRepository.findByDateAndUserId(date, user.getId());
+					Todo todoEntity;
+					if(todo.isEmpty()){
+						// 새로운 투두 객체 생성
+						todoEntity = todoRepository.save(new Todo(user, date));
+					}
+					else{
+						todoEntity = todo.get(); // 기존 투두 객체
+					}
+					// 챌린지용 투두 task 객체
+					TodoTask todoTask = TodoTask.builder()
+						.todo(todoEntity)
+						.task(challenge.getTitle())
+						.complete(false)
+						.isFromChallenge(true)
+						.challenge(challenge)
+						.build();
+
+					todoTaskRepository.save(todoTask);
+				});
+	}
+
+	// 두 날짜 사이에 존재하는 날짜들
+	public static List<LocalDate> getDatesBetweenTwoDates(LocalDate startDate, LocalDate endDate) {
+		return startDate.datesUntil(endDate)
+			.collect(Collectors.toList());
+	}
+
 }

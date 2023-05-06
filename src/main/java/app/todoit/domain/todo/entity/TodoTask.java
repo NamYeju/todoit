@@ -1,6 +1,7 @@
 package app.todoit.domain.todo.entity;
 
 import app.todoit.domain.challenge.entity.Challenge;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class TodoTask {
     @Id
@@ -33,7 +35,7 @@ public class TodoTask {
     @Column
     private Boolean isFromChallenge;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
 
