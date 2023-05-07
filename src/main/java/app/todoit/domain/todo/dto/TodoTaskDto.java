@@ -15,14 +15,11 @@ public class TodoTaskDto {
 
     private Boolean isFromChallenge;
 
-    private Challenge challenge;
-
     public TodoTaskDto toDto (TodoTask entity) {
         this.taskId=entity.getTaskId();
         this.task=entity.getTask();
         this.complete=entity.getComplete();
         this.isFromChallenge=entity.getIsFromChallenge();
-        this.challenge = entity.getChallenge();
         return this;
     }
 

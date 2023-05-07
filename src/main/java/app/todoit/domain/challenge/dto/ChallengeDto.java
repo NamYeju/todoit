@@ -1,11 +1,14 @@
 package app.todoit.domain.challenge.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,10 +23,10 @@ public class ChallengeDto {
 		private String[] day;
 		private String[] off_day;
 
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
-		private Date start_date;
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
-		private Date end_date;
+		@DateTimeFormat(pattern = "yyyy-mm-dd")
+		private LocalDate start_date;
+		@DateTimeFormat( pattern = "yyyy-mm-dd")
+		private LocalDate end_date;
 
 		private List<Challenger> friends;
 
@@ -34,6 +37,21 @@ public class ChallengeDto {
 	public static class Challenger{ //TODO 임시데이터
 		String nickname;
 		String phone;
+	}
+
+	@Getter
+	@Builder
+	public static class Response{
+		private HttpStatus httpStatus;
+		private String message;
+		public static ResponseEntity<ChallengeDto.Response> toResponse(){
+			return ResponseEntity.ok().body(
+				Response.builder()
+					.httpStatus(HttpStatus.OK)
+					.message("챌린지가 성공적으로 등록되었습니다.")
+					.build()
+			);
+		}
 	}
 
 }
