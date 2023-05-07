@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +42,7 @@ public class ChallengeService {
 	private final TodoTaskRepository todoTaskRepository;
 
 	@Transactional
-	public void registerChallenge(User user, ChallengeDto.Create request) {
+	public ResponseEntity<ChallengeDto.Response> registerChallenge(User user, ChallengeDto.Create request) {
 
 		// 챌린지 생성
 		Challenge newChallenge = Challenge.builder()
@@ -91,7 +92,7 @@ public class ChallengeService {
 
 		linkChallengeTodo(user, newChallenge);
 
-
+		return ChallengeDto.Response.toResponse();
 
 	}
 	public Challenger inviteChallengers(Challenge challenge, User user){

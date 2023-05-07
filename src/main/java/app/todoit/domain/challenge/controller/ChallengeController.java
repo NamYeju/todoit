@@ -1,5 +1,6 @@
 package app.todoit.domain.challenge.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +20,8 @@ public class ChallengeController {
 	private final ChallengeService challengeService;
 
 	@PostMapping("")
-	public void createChallenge(@RequestBody ChallengeDto.Create requestDto) {
+	public ResponseEntity<ChallengeDto.Response> createChallenge(@RequestBody ChallengeDto.Create requestDto) {
 		User user = UserThreadLocal.get();
-		challengeService.registerChallenge(user, requestDto);
+		return challengeService.registerChallenge(user, requestDto);
 	}
 }
