@@ -40,15 +40,20 @@ public class ChallengeDto {
 	}
 
 	@Getter
+	public static class Delete {
+		private String title;
+	}
+
+	@Getter
 	@Builder
 	public static class Response{
 		private HttpStatus httpStatus;
 		private String message;
-		public static ResponseEntity<ChallengeDto.Response> toResponse(){
+		public static ResponseEntity<ChallengeDto.Response> toResponse(String message){
 			return ResponseEntity.ok().body(
 				Response.builder()
 					.httpStatus(HttpStatus.OK)
-					.message("챌린지가 성공적으로 등록되었습니다.")
+					.message(message)
 					.build()
 			);
 		}
