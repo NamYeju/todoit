@@ -1,6 +1,7 @@
 package app.todoit.domain.challenge.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +20,17 @@ public class ChallengeController {
 
 	private final ChallengeService challengeService;
 
+	/** 챌린지 추가 */
 	@PostMapping("")
 	public ResponseEntity<ChallengeDto.Response> createChallenge(@RequestBody ChallengeDto.Create requestDto) {
 		User user = UserThreadLocal.get();
 		return challengeService.registerChallenge(user, requestDto);
+	}
+
+	/** 챌린지 삭제 */
+	@DeleteMapping("")
+	public ResponseEntity<ChallengeDto.Response> deleteChallenge(@RequestBody ChallengeDto.Delete requestDto){
+		UserThreadLocal.get();
+		return challengeService.deleteChallenge(requestDto.getTitle());
 	}
 }

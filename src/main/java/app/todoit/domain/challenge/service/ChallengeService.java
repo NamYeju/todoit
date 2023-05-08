@@ -92,7 +92,7 @@ public class ChallengeService {
 
 		linkChallengeTodo(user, newChallenge);
 
-		return ChallengeDto.Response.toResponse();
+		return ChallengeDto.Response.toResponse("챌린지가 성공적으로 등록되었습니다.");
 
 	}
 	public Challenger inviteChallengers(Challenge challenge, User user){
@@ -137,4 +137,17 @@ public class ChallengeService {
 			.collect(Collectors.toList());
 	}
 
+	// 챌린지 삭제
+	@Transactional
+	public ResponseEntity<ChallengeDto.Response> deleteChallenge(String title){
+		List<Challenge> challengeList = challengeRepository.findByTitle(title);
+
+		for(Challenge c1 : challengeList){
+			List<Challenger> challengerList = challengerRepository.findByChallengerAndUser(c1.getId());
+			for(Challenger c2 : challengerList){
+				challengeRepository.deleteById(c2.getChallenge().getId());
+			}
+		}
+		return ChallengeDto.Response.toResponse("챌린지가 삭제되었습니다.");
+	}
 }
