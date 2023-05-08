@@ -139,13 +139,19 @@ public class ChallengeService {
 
 	// 챌린지 삭제
 	@Transactional
-	public ResponseEntity<ChallengeDto.Response> deleteChallenge(String title){
+	public ResponseEntity<ChallengeDto.Response> deleteChallenge(User requestUser, String title){
 		List<Challenge> challengeList = challengeRepository.findByTitle(title);
 
 		for(Challenge c1 : challengeList){
-			List<Challenger> challengerList = challengerRepository.findByChallengerAndUser(c1.getId());
+			List<Challenger> challengerList = challengerRepository.findByChallengeIdAndUser(c1.getId());
 			for(Challenger c2 : challengerList){
-				challengeRepository.deleteById(c2.getChallenge().getId());
+				if(c2.getUser().getId().equals(requestUser.getId())) {
+					List<TodoTask> deleteTask = todoTaskRepository.findByChallenge(c2.getChallenge());
+					for(TodoTask task : deleteTask)
+						todoTaskRepository.deleteById(task.getTaskId());
+					challengerRepository.deleteById(c2.getId());
+					challengeRepository.deleteById(c2.getChallenge().getId());
+				}
 			}
 		}
 		return ChallengeDto.Response.toResponse("챌린지가 삭제되었습니다.");

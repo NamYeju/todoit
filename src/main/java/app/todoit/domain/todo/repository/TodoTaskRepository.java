@@ -1,5 +1,6 @@
 package app.todoit.domain.todo.repository;
 
+import app.todoit.domain.challenge.entity.Challenge;
 import app.todoit.domain.todo.entity.TodoTask;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,5 @@ public interface TodoTaskRepository extends JpaRepository<TodoTask,Long> {
     Optional<List<TodoTask>> findAllByTask ( String task);
 
     Optional<List<TodoTask>> findAllByTodoTodoId (Long todoId);
+    List<TodoTask> findByChallenge(Challenge Challenge);
 }

@@ -11,6 +11,5 @@ import app.todoit.domain.challenge.entity.Challenger;
 @Repository
 public interface ChallengerRepository extends JpaRepository<Challenger, Long> {
 	@Query("SELECT c FROM Challenger c JOIN FETCH c.user WHERE c.challenge.id = :id")
-	List<Challenger> findByChallengerAndUser(Long id);
-
+	List<Challenger> findByChallengeIdAndUser(Long id);
 }
