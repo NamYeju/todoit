@@ -40,6 +40,32 @@ public class ChallengeDto {
 	}
 
 	@Getter
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Builder
+	public static class UserChallenge{
+		private String title;
+		private String content;
+		private String start_date;
+		private String end_date;
+	}
+
+	@Getter
+	@Builder
+	public static class UserChallengeResponse{
+		private HttpStatus httpStatus;
+		private List<UserChallenge> userChallenge;
+		public static ResponseEntity<ChallengeDto.UserChallengeResponse> toResponse(List<UserChallenge> userChallenge){
+			return ResponseEntity.ok().body(
+				UserChallengeResponse.builder()
+					.httpStatus(HttpStatus.OK)
+					.userChallenge(userChallenge)
+					.build()
+			);
+		}
+	}
+
+	@Getter
 	public static class Delete {
 		private String title;
 	}
@@ -58,5 +84,4 @@ public class ChallengeDto {
 			);
 		}
 	}
-
 }
