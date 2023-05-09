@@ -2,6 +2,7 @@ package app.todoit.domain.challenge.service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -135,6 +136,23 @@ public class ChallengeService {
 	public static List<LocalDate> getDatesBetweenTwoDates(LocalDate startDate, LocalDate endDate) {
 		return startDate.datesUntil(endDate)
 			.collect(Collectors.toList());
+	}
+
+	// 챌린지 조회
+	public ResponseEntity<ChallengeDto.UserChallengeResponse> getUserChallenge(User user){
+		List<ChallengeDto.UserChallenge> responseDtoList = new ArrayList<>();
+		List<Challenger> challengerList = challengerRepository.findByUserId(user.getId());
+		for(Challenger challenger : challengerList){
+			ChallengeDto.UserChallenge responseDto = ChallengeDto.UserChallenge.builder()
+				.title(challenger.getChallenge().getTitle())
+				.content(challenger.getChallenge().getContent())
+				.start_date(challenger.getChallenge().getStart_date().toString())
+				.end_date(challenger.getChallenge().getEnd_date().toString())
+				.build();
+			responseDtoList.add(responseDto);
+		}
+		return ChallengeDto.UserChallengeResponse.toResponse(responseDtoList);
+
 	}
 
 	// 챌린지 삭제
