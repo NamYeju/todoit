@@ -35,7 +35,6 @@ public class ChallengeController {
 		return challengeService.getUserChallenge(user);
 	}
 
-
 	/** 챌린지 삭제 */
 	@DeleteMapping("")
 	public ResponseEntity<ChallengeDto.Response> deleteChallenge(@RequestBody ChallengeDto.Delete requestDto){
