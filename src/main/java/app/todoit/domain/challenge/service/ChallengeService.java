@@ -1,10 +1,8 @@
 package app.todoit.domain.challenge.service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +19,7 @@ import app.todoit.domain.challenge.entity.Challenge;
 import app.todoit.domain.challenge.entity.Challenger;
 import app.todoit.domain.challenge.entity.InviteStatus;
 import app.todoit.domain.challenge.entity.Role;
+import app.todoit.domain.challenge.exception.ChallengeException;
 import app.todoit.domain.challenge.repository.ChallengeRepository;
 import app.todoit.domain.challenge.repository.ChallengerRepository;
 import app.todoit.domain.todo.entity.Todo;
@@ -162,6 +161,8 @@ public class ChallengeService {
 
 		for(Challenge c1 : challengeList){
 			List<Challenger> challengerList = challengerRepository.findByChallengeIdAndUser(c1.getId());
+			if(challengerList.size()==0) throw new ChallengeException(ErrorCode.CHALLENGE_NOT_FOUND);
+
 			for(Challenger c2 : challengerList){
 				if(c2.getUser().getId().equals(requestUser.getId())) {
 					List<TodoTask> deleteTask = todoTaskRepository.findByChallenge(c2.getChallenge());
