@@ -22,7 +22,7 @@ public class AuthService {
 
 	private final UserRepository userRepository;
 	private final JwtUtil jwtUtil;
-	private final RedisService redisService;
+	private final RedisService  redisService;
 
 	public boolean isJoined(KakaoUserDto kakaoUserDto){
 		Optional<User> kakaoUser = userRepository.findByEmail(kakaoUserDto.getEmail());
@@ -73,7 +73,7 @@ public class AuthService {
 		String savedRefreshToken = redisService.getRefreshToken(user.get());
 
 		if(!refreshToken.equals(savedRefreshToken)){
-			// TODO 예외처리
+			throw new MemberException(ErrorCode.INVALID_TOKEN);
 		}
 		String atk = jwtUtil.generateAccessToken(user.get());
 		redisService.saveAccessToken(user.get(), atk);

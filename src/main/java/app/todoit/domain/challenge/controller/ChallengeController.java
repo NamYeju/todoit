@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.todoit.domain.auth.entity.User;
@@ -41,4 +42,25 @@ public class ChallengeController {
 		User user = UserThreadLocal.get();
 		return challengeService.deleteChallenge(user, requestDto.getTitle());
 	}
+
+	/** 신청 온 챌린지 목록*/
+	@GetMapping("/invite")
+	public ResponseEntity<ChallengeDto.ChallengeResponse> getInvitedChallengeList(){
+		User user = UserThreadLocal.get();
+		return ChallengeDto.ChallengeResponse.toResponse(challengeService.invitedChallengeList(user));
+	}
+
+	/** 신청 온 챌린지 수락 */
+	@PostMapping ("/accept")
+	public ResponseEntity<ChallengeDto.Response> acceptInvitedChallenge(@RequestParam Long challengeId){
+		User user = UserThreadLocal.get();
+		return challengeService.acceptChallenge(user, challengeId);
+	}
+	/** 신청 온 챌린지 거절 */
+	@PostMapping ("/refuse")
+	public ResponseEntity<ChallengeDto.Response> refuseInvitedChallenge(@RequestParam Long challengeId){
+		User user = UserThreadLocal.get();
+		return challengeService.refuseChallenge(user, challengeId);
+	}
+
 }

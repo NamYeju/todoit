@@ -1,10 +1,8 @@
 package app.todoit.domain.challenge.service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +19,7 @@ import app.todoit.domain.challenge.entity.Challenge;
 import app.todoit.domain.challenge.entity.Challenger;
 import app.todoit.domain.challenge.entity.InviteStatus;
 import app.todoit.domain.challenge.entity.Role;
+import app.todoit.domain.challenge.exception.ChallengeException;
 import app.todoit.domain.challenge.repository.ChallengeRepository;
 import app.todoit.domain.challenge.repository.ChallengerRepository;
 import app.todoit.domain.todo.entity.Todo;
@@ -42,6 +41,9 @@ public class ChallengeService {
 	private final TodoRepository todoRepository;
 	private final TodoTaskRepository todoTaskRepository;
 
+	/**
+	 * 챌린지 추가
+	 * */
 	@Transactional
 	public ResponseEntity<ChallengeDto.Response> registerChallenge(User user, ChallengeDto.Create request) {
 
@@ -58,11 +60,11 @@ public class ChallengeService {
 
 		challengeRepository.save(newChallenge);
 
-		// // 챌린지를 생성한 챌린저 DB에 저장
+		// 챌린지를 생성한 챌린저 DB에 저장
 		Challenger leader = Challenger.builder()
 			.challenge(newChallenge)
 			.user(user)
-			.status(InviteStatus.ACCEPT) //TODO enum 값 모호함
+			.status(InviteStatus.ACCEPT)
 			.role(Role.Leader)
 			.startDate(request.getStart_date())
 			.build();
@@ -75,8 +77,7 @@ public class ChallengeService {
 
 		challengerRepository.save(leader);
 
-
-		// 챌린지 초대 보내기
+		// 친구에게 챌린지 초대 보내기
 		if(request.getFriends().size() != 0){
 			request.getFriends().stream()
 				.map(f -> {
@@ -96,49 +97,63 @@ public class ChallengeService {
 		return ChallengeDto.Response.toResponse("챌린지가 성공적으로 등록되었습니다.");
 
 	}
+	/**
+	 * 친구에게 챌린지 초대
+	 * */
 	public Challenger inviteChallengers(Challenge challenge, User user){
 		return Challenger.builder()
 			.challenge(challenge)
 			.user(user)
 			.status(InviteStatus.PENDING)
 			.role(Role.Member)
-			.startDate(challenge.getStart_date()) // TODO 초대 날짜에 따라 개인 시작 날짜 다르게
+			.startDate(challenge.getStart_date())
 			.build();
 	}
-
+	/**
+	 * 챌린지와 투두리스트 연동
+	 * */
 	public void linkChallengeTodo(User user, Challenge challenge){
-		getDatesBetweenTwoDates(challenge.getStart_date(), challenge.getEnd_date())
-			.stream()
-				.forEach(date -> {
-					Optional<Todo> todo = todoRepository.findByDateAndUserId(date, user.getId());
-					Todo todoEntity;
-					if(todo.isEmpty()){
-						// 새로운 투두 객체 생성
-						todoEntity = todoRepository.save(new Todo(user, date));
-					}
-					else{
-						todoEntity = todo.get(); // 기존 투두 객체
-					}
-					// 챌린지용 투두 task 객체
-					TodoTask todoTask = TodoTask.builder()
-						.todo(todoEntity)
-						.task(challenge.getTitle())
-						.complete(false)
-						.isFromChallenge(true)
-						.challenge(challenge)
-						.build();
+		user.getUserInChallenge().stream()
+				.forEach(challenger -> {
+					if(challenger.getChallenge().getId().equals(challenge.getId())){
+						getDatesBetweenTwoDates(challenge.getStart_date(), challenge.getEnd_date())
+							.stream()
+							.forEach(date -> {
+								Optional<Todo> todo = todoRepository.findByDateAndUserId(date, user.getId());
+								Todo todoEntity;
+								if(todo.isEmpty()){
+									// 새로운 투두 객체 생성
+									todoEntity = todoRepository.save(new Todo(user, date));
+								}
+								else{
+									todoEntity = todo.get(); // 기존 투두 객체
+								}
+								// 챌린지용 투두 task 객체
 
-					todoTaskRepository.save(todoTask);
+								TodoTask todoTask = TodoTask.builder()
+									.todo(todoEntity)
+									.task(challenge.getTitle())
+									.complete(false)
+									.isFromChallenge(true)
+									.challenge(challenge)
+									.build();
+
+								todoTaskRepository.save(todoTask);
+							});
+					}
 				});
 	}
-
-	// 두 날짜 사이에 존재하는 날짜들
+	/**
+	 * 챌린지 시작 날짜와 종료 날짜 사이에 존재하는 날짜들
+	 * */
 	public static List<LocalDate> getDatesBetweenTwoDates(LocalDate startDate, LocalDate endDate) {
 		return startDate.datesUntil(endDate)
 			.collect(Collectors.toList());
 	}
 
-	// 챌린지 조회
+	/**
+	 * 챌린지 조회
+	 * */
 	public ResponseEntity<ChallengeDto.UserChallengeResponse> getUserChallenge(User user){
 		List<ChallengeDto.UserChallenge> responseDtoList = new ArrayList<>();
 		List<Challenger> challengerList = challengerRepository.findByUserId(user.getId());
@@ -155,13 +170,93 @@ public class ChallengeService {
 
 	}
 
-	// 챌린지 삭제
+	/**
+	 * 나에게 초대신청 온 챌린지 조회
+	 * */
+	public List<ChallengeDto.Challenge> invitedChallengeList(User user){
+		List<ChallengeDto.Challenge> challengeList = new ArrayList<>();
+		user.getUserInChallenge().stream().forEach(
+			challenger -> {
+				if(challenger.getStatus().equals(InviteStatus.PENDING)){
+					Challenge challenge = challenger.getChallenge();
+					challengeList.add(ChallengeDto.Challenge.builder()
+						.id(challenge.getId())
+						.title(challenge.getTitle())
+						.content(challenge.getContent())
+						.start_date(challenge.getStart_date().toString())
+						.end_date(challenge.getEnd_date().toString())
+						.build()
+					);
+				}
+			}
+		);
+		return challengeList;
+	}
+	/**
+	 * 챌린지 초대 수락
+	 */
+	@Transactional
+	public ResponseEntity<ChallengeDto.Response> acceptChallenge(User user, Long challengeId){
+		// 챌린지 초대 요청 온 챌린지 리스트
+		List<ChallengeDto.Challenge> challengeList = invitedChallengeList(user);
+		// 리스트 중 요청 온 챌린지 객체
+		for(ChallengeDto.Challenge challenge : challengeList) {
+			Challenge c = challengeRepository.findById(challenge.getId()).orElseThrow(
+				() -> new ChallengeException(ErrorCode.CHALLENGE_NOT_FOUND)
+			);
+			if (c.getId().equals(challengeId)) {
+				user.getUserInChallenge().stream()
+					.forEach(challenger -> {
+						if (challenger.getChallenge().getId().equals(c.getId())) {
+							challenger.setStatus(InviteStatus.ACCEPT);
+							challengerRepository.save(challenger);
+						}
+					});
+				// 투두와 연동
+				linkChallengeTodo(user, c);
+			}
+		}
+		return ChallengeDto.Response.toResponse("챌린지 수락 완료");
+	}
+	/**
+	 * 챌린지 초대 거절
+	 *
+	 */
+	@Transactional
+	public ResponseEntity<ChallengeDto.Response> refuseChallenge(User user, Long challengeId){
+		// 챌린지 초대 요청 온 챌린지 리스트
+		List<ChallengeDto.Challenge> challengeList = invitedChallengeList(user);
+		// 리스트 중 요청 온 챌린지 객체
+		for(ChallengeDto.Challenge challenge : challengeList) {
+			Challenge c = challengeRepository.findById(challenge.getId()).orElseThrow(
+				() -> new ChallengeException(ErrorCode.CHALLENGE_NOT_FOUND)
+			);
+			if (c.getId().equals(challengeId)) {
+				user.getUserInChallenge().stream()
+					.forEach(challenger -> {
+						if (challenger.getChallenge().getId().equals(c.getId())) {
+							challenger.setStatus(InviteStatus.REFUSE);
+							challengerRepository.save(challenger);
+							//DB에서 삭제
+							challengerRepository.deleteById(challenger.getId());
+						}
+					});
+			}
+		}
+		return ChallengeDto.Response.toResponse("챌린지 거절 완료");
+	}
+
+	/**
+	 * 챌린지 삭제
+	 * */
 	@Transactional
 	public ResponseEntity<ChallengeDto.Response> deleteChallenge(User requestUser, String title){
 		List<Challenge> challengeList = challengeRepository.findByTitle(title);
 
 		for(Challenge c1 : challengeList){
 			List<Challenger> challengerList = challengerRepository.findByChallengeIdAndUser(c1.getId());
+			if(challengerList.size()==0) throw new ChallengeException(ErrorCode.CHALLENGE_NOT_FOUND);
+
 			for(Challenger c2 : challengerList){
 				if(c2.getUser().getId().equals(requestUser.getId())) {
 					List<TodoTask> deleteTask = todoTaskRepository.findByChallenge(c2.getChallenge());

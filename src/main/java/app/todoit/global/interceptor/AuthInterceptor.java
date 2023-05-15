@@ -32,7 +32,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
 		log.info("interceptor start: {}", request.getRequestURI());
 
@@ -49,7 +49,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
 			String userId = jwtUtil.getSubject(accessToken);
 			User user = userRepository.findById(Long.parseLong(userId))
-				.orElseThrow(()->new MemberException(ErrorCode.NOT_FOUND_USER)); //TODO exception 수정
+				.orElseThrow(()->new MemberException(ErrorCode.NOT_FOUND_USER));
 			log.info("user : {}", user.getEmail());
 
 			// 로그아웃 체크
