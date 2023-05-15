@@ -2,7 +2,6 @@ package app.todoit.domain.challenge.entity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -55,6 +54,5 @@ public class Challenge {
 		// if(challenger.getChallenge() != this){
 		// 	challenger.setChallenge(this);
 		// }
-
 	}
 }

@@ -1,7 +1,6 @@
 package app.todoit.domain.challenge.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import app.todoit.domain.auth.entity.User;
 import lombok.AllArgsConstructor;
@@ -62,5 +59,9 @@ public class Challenger {
 	}
 	public void setUser(User user){
 		this.user = user;
+	}
+
+	public void setStatus(InviteStatus newStatus){
+		this.status = newStatus;
 	}
 }

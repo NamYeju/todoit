@@ -51,6 +51,32 @@ public class ChallengeDto {
 	}
 
 	@Getter
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Builder
+	public static class Challenge{
+		private Long id;
+		private String title;
+		private String content;
+		private String start_date;
+		private String end_date;
+	}
+	@Getter
+	@Builder
+	public static class ChallengeResponse{
+		private HttpStatus httpStatus;
+		private List<Challenge> challenge;
+		public static ResponseEntity<ChallengeDto.ChallengeResponse> toResponse(List<Challenge> challenge){
+			return ResponseEntity.ok().body(
+				ChallengeResponse.builder()
+					.httpStatus(HttpStatus.OK)
+					.challenge(challenge)
+					.build()
+			);
+		}
+	}
+
+	@Getter
 	@Builder
 	public static class UserChallengeResponse{
 		private HttpStatus httpStatus;
