@@ -158,13 +158,15 @@ public class ChallengeService {
 		List<ChallengeDto.UserChallenge> responseDtoList = new ArrayList<>();
 		List<Challenger> challengerList = challengerRepository.findByUserId(user.getId());
 		for(Challenger challenger : challengerList){
-			ChallengeDto.UserChallenge responseDto = ChallengeDto.UserChallenge.builder()
-				.title(challenger.getChallenge().getTitle())
-				.content(challenger.getChallenge().getContent())
-				.start_date(challenger.getChallenge().getStart_date().toString())
-				.end_date(challenger.getChallenge().getEnd_date().toString())
-				.build();
-			responseDtoList.add(responseDto);
+			if(challenger.getStatus().equals(InviteStatus.ACCEPT)){
+				ChallengeDto.UserChallenge responseDto = ChallengeDto.UserChallenge.builder()
+					.title(challenger.getChallenge().getTitle())
+					.content(challenger.getChallenge().getContent())
+					.start_date(challenger.getChallenge().getStart_date().toString())
+					.end_date(challenger.getChallenge().getEnd_date().toString())
+					.build();
+				responseDtoList.add(responseDto);
+			}
 		}
 		return ChallengeDto.UserChallengeResponse.toResponse(responseDtoList);
 
